@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>仓储货位温湿度/氧含量监测</title>
+    <script src="./lib/socket.io.js"></script>
+    <script src="./lib/jquery-1.11.1.js"></script>
+    <script src="./lib/echarts.min.js"></script>
+    <link rel="stylesheet" href="./css/base.css">
+</head>
+<script>
+        var phoneW =  parseInt(window.screen.width),phoneScale = phoneW/640,ua = navigator.userAgent;
+        if (/Android (\d+\.\d+)/.test(ua)){
+            var version = parseFloat(RegExp.$1);
+            if(version>2.3){
+                document.write('<meta name="viewport" content="width=640, initial-scale='+phoneScale+', minimum-scale = '+phoneScale+', maximum-scale = '+phoneScale+', target-densitydpi=device-dpi">');
+            }else{
+                document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+            }
+        } else {document.write(
+            '<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+        }
+    </script> 
+<script type="text/javascript">
+    $(function () {
+        var myChart = echarts.init(document.getElementById('main'));
+        var data = [];
+        option = {
+            title: {
+                // text: '氧含量'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    params = params[0];
+                    var date = new Date(params.name);
+                    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() +
+                        ' : ' + params.value[1];
+                },
+                axisPointer: {
+                    animation: false
+                }
+            },
+            xAxis: {
+                name:'时间',
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                name:'氧含量',
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                data: data
+            }]
+        };
+        myChart.setOption(option);
+
+        var iosocket = io.connect("ws://localhost:5438/"); // 114.55.253.187
+        iosocket.on("connect", function () {
+            console.log('connect');
+        });
+        iosocket.on('mqtt', function (res) {
+            // console.log(res);
+            if (res) {
+                $('.now').html(res[res.length - 1].value + res[res.length - 1].unit);
+                // for (var i = 0; i < res.length; i++) {
+                // now = new Date();
+                // data.shift();
+                // data.push({
+                //     name: now.toString(),
+                //     value: [
+                //         [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'),
+                //         res[i].value
+                //     ]
+                // });
+                // console.log(data);
+                // $('.now').html(res[i].value + res[i].unit);
+                // }
+
+                // myChart.setOption({
+                //     series: [{
+                //         data: data
+                //     }]
+                // });
+            }
+
+        });
+
+        function getData() {
+            $.get('/ws/data', function (res, status) {
+                // console.log(data, status);
+                if (status == 'success') {
+                    for (var i = 0; i < res.length; i++) {
+                        // console.log(res[i].collectTime);
+                        data.push({
+                            name: res[i].collectTime,
+                            value: [
+                                res[i].collectTime, res[i].varValue
+                            ]
+                        });
+                    }
+                    // console.log(data);
+                    myChart.setOption({
+                        series: [{
+                            data: data
+                        }]
+                    });
+                } else {
+                    alert('加载数据失败，请重试！');
+                    console.log(data);
+                }
+
+            });
+        }
+        getData();
+    });
+</script>
+
+<body>
+    <div class="banner">仓储货位温湿度/氧含量监测</div>
+    <div class="box">
+        <div class="box-title">货位1</div>
+
+        <div class="box-head">当前氧含量
+            <span class="now"></span>
+        </div>
+        <div id="main" style="width: 80%;height:400px;"></div>
+        <!-- <div class="box-bottom">时间</div> -->
+    </div>
+</body>
+
+</html>

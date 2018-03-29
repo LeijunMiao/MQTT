@@ -1,0 +1,11 @@
+{
+  "name": "mqtt",
+  "version": "0.0.1",
+  "description": "mqtt",
+  "dependencies": {
+    "async": "^2.6.0",
+    "express": "^4.16.3",
+    "socket.io": "^2.0.4",
+    "urllib": "^2.27.0"
+  }
+}

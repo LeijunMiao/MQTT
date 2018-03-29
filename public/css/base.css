@@ -1,0 +1,37 @@
+.banner {
+    background-color: #ED7D31;
+    padding: 10px;
+    color: #fff;
+    text-align: center;
+}
+
+.box {
+    background-color: #F2F2F2;
+    border: 1px solid #4C75C0;
+    width: 50%;
+    margin: 20px;
+    box-shadow: 1px 1px 1px #333333;
+}
+
+.box-title {
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+}
+
+.box-head {
+    background-color: #843C0C;
+    color: #fff;
+    padding-left: 5px;
+}
+
+.box-bottom {
+    text-align: center;
+    height: 35px;
+}
+
+@media (max-width: 991px) {
+    .box {
+        width: 80%;
+    }
+}
