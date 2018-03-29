@@ -1,5 +1,5 @@
 {
-  "name": "mqtt",
+  "name": "internetOFThings",
   "version": "0.0.1",
   "description": "mqtt",
   "dependencies": {
