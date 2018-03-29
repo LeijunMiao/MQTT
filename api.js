@@ -41,8 +41,8 @@ exports.getData = function (req, res) {
         }
       });
     },
-    history: ['jwt',function(r,cb_auto){
-      var url = '/api/devices/5e005e1901000001/datas?limit=1000&offset=0';
+    totalCount: ['jwt', function(r,cb_auto){
+      var url = '/api/devices/5e005e1901000001/datas';
       urllib.request(domain + url,{
         headers: {
           'authorization': r.jwt,
@@ -54,7 +54,28 @@ exports.getData = function (req, res) {
         }
         else if (!err && res.statusCode == 200) {
           var r = JSON.parse(data.toString());
-          cb_auto(null,r.result.slice(-20));
+          cb_auto(null,r.totalCount - 20);
+        } else {
+          cb_auto(-1);
+        }
+      });
+    }],
+    history: ['totalCount',function(r,cb_auto){
+      var url = '/api/devices/5e005e1901000001/datas?limit=20&offset=';
+      r.totalCount = r.totalCount > 0?r.totalCount:0;
+      url += r.totalCount;
+      urllib.request(domain + url,{
+        headers: {
+          'authorization': r.jwt,
+          'Content-Type': 'application/json'
+        }
+      }, function (err, data, res) {
+        if (err) {
+          cb_auto(err);
+        }
+        else if (!err && res.statusCode == 200) {
+          var r = JSON.parse(data.toString());
+          cb_auto(null,r.result);//.slice(-20)
         } else {
           cb_auto(-1);
         }
