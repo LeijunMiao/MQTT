@@ -68,7 +68,7 @@
         };
         myChart.setOption(option);
 
-        var iosocket = io.connect("ws://localhost:5438/"); // 114.55.253.187
+        var iosocket = io.connect("ws://114.55.253.187:5438/"); // 114.55.253.187
         iosocket.on("connect", function () {
             console.log('connect');
         });
