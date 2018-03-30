@@ -1,0 +1,16 @@
+body{
+    background: #E9E9E9;
+}
+.banner{
+    background-color: #000;
+}
+.box{
+    background-color: #fff;
+    border: 1px solid #999999;
+}
+.box-title{
+    font-weight: bold;
+}
+.box-head{
+    background-color: #000;
+}

@@ -3,7 +3,7 @@ var api = require('./api');
 var client = mqtt.connect('mqtt://47.98.106.202', {
     username: 'loraappserver',
     password: 'kxw',
-    clientId: 'app_1',
+    clientId: 'app_2',
     port: 1883
 });
 
@@ -32,8 +32,9 @@ var sio = io.listen(server);
 
 sio.on('connection', function (socket) {
     client.on('message', function (topic, msg) {
-        console.log('收到 ' + topic + ' 主題，訊息：' + msg.toString());
+        console.log('收到 ' + topic + ' 主題，訊息：' + JSON.parse(msg));
         var data = JSON.parse(msg);
+
         socket.emit('mqtt', data.appData);
     });
 });

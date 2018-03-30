@@ -9,25 +9,42 @@
     <script src="./lib/jquery-1.11.1.js"></script>
     <script src="./lib/echarts.min.js"></script>
     <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/style1.css">
 </head>
 <script>
-        var phoneW =  parseInt(window.screen.width),phoneScale = phoneW/640,ua = navigator.userAgent;
-        if (/Android (\d+\.\d+)/.test(ua)){
-            var version = parseFloat(RegExp.$1);
-            if(version>2.3){
-                document.write('<meta name="viewport" content="width=640, initial-scale='+phoneScale+', minimum-scale = '+phoneScale+', maximum-scale = '+phoneScale+', target-densitydpi=device-dpi">');
-            }else{
-                document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
-            }
-        } else {document.write(
-            '<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+    var phoneW = parseInt(window.screen.width),
+        phoneScale = phoneW / 640,
+        ua = navigator.userAgent;
+    if (/Android (\d+\.\d+)/.test(ua)) {
+        var version = parseFloat(RegExp.$1);
+        if (version > 2.3) {
+            document.write('<meta name="viewport" content="width=640, initial-scale=' + phoneScale +
+                ', minimum-scale = ' + phoneScale + ', maximum-scale = ' + phoneScale +
+                ', target-densitydpi=device-dpi">');
+        } else {
+            document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
         }
-    </script> 
+    } else {
+        document.write(
+            '<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+    }
+</script>
 <script type="text/javascript">
     $(function () {
-        var myChart = echarts.init(document.getElementById('main'));
-        var data = [];
-        option = {
+        var myChartO_1 = echarts.init(document.getElementById('mainO_1'));
+        var myChartO_2 = echarts.init(document.getElementById('mainO_2'));
+        var myChartO_3 = echarts.init(document.getElementById('mainO_3'));
+        var myChartT_1 = echarts.init(document.getElementById('mainT_1'));
+        var myChartT_2 = echarts.init(document.getElementById('mainT_2'));
+        var myChartT_3 = echarts.init(document.getElementById('mainT_3'));
+        var myChartH_1 = echarts.init(document.getElementById('mainH_1'));
+        var myChartH_2 = echarts.init(document.getElementById('mainH_2'));
+        var myChartH_3 = echarts.init(document.getElementById('mainH_3'));
+        var dataO_1 = [];
+        var dataO_2 = [];
+        var dataT_3 = [];
+        var dataH_3 = [];
+        optionO = {
             title: {
                 // text: '氧含量'
             },
@@ -36,24 +53,41 @@
                 formatter: function (params) {
                     params = params[0];
                     var date = new Date(params.name);
-                    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() +
-                        ' : ' + params.value[1];
+                    // return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+                    return params.value[1];
                 },
                 axisPointer: {
                     animation: false
                 }
             },
             xAxis: {
-                name:'时间',
+                name: '时间',
                 type: 'time',
                 splitLine: {
                     show: false
+                },
+                axisLabel: {
+                    formatter: function(value){
+                        value -= (9*60 + 30)*60*1000;
+                        return echarts.format.formatTime('hh:mm:ss', value);
+                    }
                 }
             },
             yAxis: {
-                name:'氧含量',
+                name: '氧含量(ppm)',
                 type: 'value',
+                axisLabel: {
+                    formatter: '{value} '
+                },
                 boundaryGap: [0, '100%'],
+                // min: 'dataMin',
+                min: function (value) {
+                    return value.min - 0.5;
+                },
+                max: function (value) {
+                    return value.max + 0.5;
+                },
+                // scale: true,
                 splitLine: {
                     show: false
                 }
@@ -61,12 +95,138 @@
             series: [{
                 name: '模拟数据',
                 type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: data
+                // showSymbol: false,
+                // hoverAnimation: false,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                areaStyle: {
+                    normal: {}
+                },
+                data: []
             }]
         };
-        myChart.setOption(option);
+        optionT = {
+            title: {
+                // text: '氧含量'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    params = params[0];
+                    var date = new Date(params.name);
+                    return params.value[1];
+                },
+                axisPointer: {
+                    animation: false
+                }
+            },
+            xAxis: {
+                name: '时间',
+                type: 'time',
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    formatter: function(value){
+                        value += (2*60)*60*1000;
+                        return echarts.format.formatTime('hh:mm:ss', value);
+                    }
+                }
+            },
+            yAxis: {
+                name: '温度(degC)',
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                min: function (value) {
+                    return value.min - 5;
+                },
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    formatter: '{value} %'
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                // showSymbol: false,
+                // hoverAnimation: false,
+                // label: {
+                //     normal: {
+                //         show: true,
+                //         position: 'top'
+                //     }
+                // },
+                data: []
+            }]
+        };
+        optionH = {
+            title: {
+                // text: '氧含量'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    params = params[0];
+                    var date = new Date(params.name);
+                    return params.value[1];
+                },
+                axisPointer: {
+                    animation: false
+                }
+            },
+            xAxis: {
+                name: '时间',
+                type: 'time',
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    formatter: function(value){
+                        value += (2*60)*60*1000;
+                        return echarts.format.formatTime('hh:mm:ss', value);
+                    }
+                }
+            },
+            yAxis: {
+                name: '湿度(RH)',
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                min: function (value) {
+                    return value.min - 5;
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                // showSymbol: false,
+                // hoverAnimation: false,
+                // label: {
+                //     normal: {
+                //         show: true,
+                //         position: 'top'
+                //     }
+                // },
+                data: []
+            }]
+        };
+        myChartO_1.setOption(optionO);
+        myChartO_2.setOption(optionO);
+        myChartO_3.setOption(optionO);
+        myChartT_1.setOption(optionT);
+        myChartT_2.setOption(optionT);
+        myChartT_3.setOption(optionT);
+        myChartH_1.setOption(optionH);
+        myChartH_2.setOption(optionH);
+        myChartH_3.setOption(optionH);
 
         var iosocket = io.connect("ws://114.55.253.187:5438/"); // 114.55.253.187
         iosocket.on("connect", function () {
@@ -75,7 +235,7 @@
         iosocket.on('mqtt', function (res) {
             // console.log(res);
             if (res) {
-                $('.now').html(res[res.length - 1].value + res[res.length - 1].unit);
+                // $('.now').html(res[res.length - 1].value + res[res.length - 1].unit);
                 // for (var i = 0; i < res.length; i++) {
                 // now = new Date();
                 // data.shift();
@@ -103,19 +263,59 @@
             $.get('/ws/data', function (res, status) {
                 // console.log(data, status);
                 if (status == 'success') {
-                    for (var i = 0; i < res.length; i++) {
-                        // console.log(res[i].collectTime);
-                        data.push({
-                            name: res[i].collectTime,
+                    for (var i = 0; i < res.oxygen1.length; i++) {
+                        dataO_1.push({
+                            name: res.oxygen1[i].collectTime,
                             value: [
-                                res[i].collectTime, res[i].varValue
+                                res.oxygen1[i].collectTime, res.oxygen1[i].varValue
                             ]
                         });
                     }
+                    for (var i = 0; i < res.oxygen2.length; i++) {
+                        dataO_2.push({
+                            name: res.oxygen2[i].collectTime,
+                            value: [
+                                res.oxygen2[i].collectTime, res.oxygen2[i].varValue
+                            ]
+                        });
+                    }
+                    for (var i = 0; i < res.th.length; i++) {
+                        console.log(res.th[i]);
+                        if (res.th[i].varName == 'humidity') {
+                            dataH_3.push({
+                                name: res.th[i].collectTime,
+                                value: [
+                                    res.th[i].collectTime, res.th[i].varValue
+                                ]
+                            });
+                        } else if (res.th[i].varName == 'temperature') {
+                            dataT_3.push({
+                                name: res.th[i].collectTime,
+                                value: [
+                                    res.th[i].collectTime, res.th[i].varValue
+                                ]
+                            });
+                        }
+                    }
                     // console.log(data);
-                    myChart.setOption({
+                    myChartO_1.setOption({
                         series: [{
-                            data: data
+                            data: dataO_1
+                        }]
+                    });
+                    myChartO_2.setOption({
+                        series: [{
+                            data: dataO_2
+                        }]
+                    });
+                    myChartT_3.setOption({
+                        series: [{
+                            data: dataT_3
+                        }]
+                    });
+                    myChartH_3.setOption({
+                        series: [{
+                            data: dataH_3
                         }]
                     });
                 } else {
@@ -131,14 +331,45 @@
 
 <body>
     <div class="banner">仓储货位温湿度/氧含量监测</div>
-    <div class="box">
-        <div class="box-title">货位1</div>
+    <div class="row">
+        <div class="box">
+            <div class="box-title">货位1</div>
 
-        <div class="box-head">当前氧含量
-            <span class="now"></span>
+            <div class="box-head">
+                <!-- 当前氧含量 -->
+                <span class="now"></span>
+            </div>
+            <div id="mainO_1" class="chart"></div>
+            <div id="mainT_1" class="chart"></div>
+            <div id="mainH_1" class="chart"></div>
+            <!-- <div class="box-bottom">时间</div> -->
         </div>
-        <div id="main" style="width: 80%;height:400px;"></div>
-        <!-- <div class="box-bottom">时间</div> -->
+        <div class="box">
+            <div class="box-title">货位2</div>
+
+            <div class="box-head">
+                <!-- 当前温湿度 -->
+                <span class="now"></span>
+            </div>
+            <div id="mainO_2" class="chart"></div>
+            <div id="mainT_2" class="chart"></div>
+            <div id="mainH_2" class="chart"></div>
+            <!-- <div class="box-bottom">时间</div> -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="box">
+            <div class="box-title">货位3</div>
+
+            <div class="box-head">
+                <!-- 当前氧含量 -->
+                <span class="now"></span>
+            </div>
+            <div id="mainO_3" class="chart"></div>
+            <div id="mainT_3" class="chart"></div>
+            <div id="mainH_3" class="chart"></div>
+            <!-- <div class="box-bottom">时间</div> -->
+        </div>
     </div>
 </body>
 
