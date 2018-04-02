@@ -67,8 +67,8 @@
                     show: false
                 },
                 axisLabel: {
-                    formatter: function(value){
-                        value -= (9*60 + 30)*60*1000;
+                    formatter: function (value) {
+                        value -= (9 * 60 + 30) * 60 * 1000;
                         return echarts.format.formatTime('hh:mm:ss', value);
                     }
                 }
@@ -131,8 +131,8 @@
                     show: false
                 },
                 axisLabel: {
-                    formatter: function(value){
-                        value += (2*60)*60*1000;
+                    formatter: function (value) {
+                        value += (2 * 60) * 60 * 1000;
                         return echarts.format.formatTime('hh:mm:ss', value);
                     }
                 }
@@ -184,8 +184,8 @@
                     show: false
                 },
                 axisLabel: {
-                    formatter: function(value){
-                        value += (2*60)*60*1000;
+                    formatter: function (value) {
+                        value += (2 * 60) * 60 * 1000;
                         return echarts.format.formatTime('hh:mm:ss', value);
                     }
                 }
@@ -261,7 +261,8 @@
 
         function getData() {
             $.get('/ws/data', function (res, status) {
-                // console.log(data, status);
+                res.oxygen1 = res.oxygen1.sort(compare('collectTime'));
+                res.oxygen2 = res.oxygen2.sort(compare('collectTime'));
                 if (status == 'success') {
                     for (var i = 0; i < res.oxygen1.length; i++) {
                         dataO_1.push({
@@ -270,6 +271,7 @@
                                 res.oxygen1[i].collectTime, res.oxygen1[i].varValue
                             ]
                         });
+                        // console.log(res.oxygen1[i].collectTime);
                     }
                     for (var i = 0; i < res.oxygen2.length; i++) {
                         dataO_2.push({
@@ -280,7 +282,7 @@
                         });
                     }
                     for (var i = 0; i < res.th.length; i++) {
-                        console.log(res.th[i]);
+
                         if (res.th[i].varName == 'humidity') {
                             dataH_3.push({
                                 name: res.th[i].collectTime,
@@ -324,6 +326,14 @@
                 }
 
             });
+        }
+
+        function compare(property) {
+            return function (a, b) {
+                var value1 = new Date(a[property]).getTime();
+                var value2 = new Date(b[property]).getTime();
+                return value1 - value2;
+            }
         }
         getData();
     });
